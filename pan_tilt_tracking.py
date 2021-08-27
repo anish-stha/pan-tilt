@@ -1,7 +1,7 @@
 # USAGE
 # python pan_tilt_tracking.py --cascade haarcascade_frontalface_default.xml
 # import necessary packages
-from multiprocessing import Manager
+from multiprocessing import Manager, process
 from multiprocessing import Process
 from imutils.video import VideoStream
 from objcenter import ObjCenter
@@ -150,9 +150,9 @@ def log(head_x, head_y, frame_x, frame_y, pan, tlt):
     with open("logs.csv", 'a') as csvfile:
         # creating a csv writer object
         csvwriter = csv.writer(csvfile)
-        # writing the fields
-        csvwriter.writerow([head_x, head_y, frame_x, frame_y, pan, tlt])
-
+        while True:
+            # writing the fields
+            csvwriter.writerow([time.time(), head_x.value, head_y.value, frame_x.value, frame_y.value, pan.value, tlt.value])
 
 # check to see if this is the main body of execution
 if __name__ == "__main__":
@@ -193,15 +193,17 @@ if __name__ == "__main__":
         processTilting = Process(target=pid_process,
                                  args=(tlt, tiltP, tiltI, tiltD, objY, centerY))
         processSetServos = Process(target=set_servos, args=(pan, tlt))
-        processLog = Process(target=log(objX, objY, centerX, centerY, pan, tlt))
+        processLog = Process(target=log,args = (objX, objY, centerX, centerY, pan, tlt))
 
         # start processes
         processObjectCenter.start()
         processPanning.start()
         processTilting.start()
         processSetServos.start()
+        processLog.start()
 
         processObjectCenter.join()
         processPanning.join()
         processTilting.join()
         processSetServos.join()
+        processLog.join()
