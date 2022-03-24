@@ -1,0 +1,5 @@
+source /home/pi/face-orientation/env/bin/activate
+
+cd pan-tilt/
+
+python pan_tilt_tracking.py
