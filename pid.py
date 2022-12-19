@@ -2,6 +2,7 @@
 import time
 
 class PID:
+
 	def __init__(self, kP=1, kI=0, kD=0):
 		# initialize gains
 		self.kP = kP
@@ -21,7 +22,7 @@ class PID:
 		self.cI = 0
 		self.cD = 0
 
-	def update(self, error, sleep=1):
+	def update(self, error, sleep=0.1):
 		# pause for a bit
 		time.sleep(sleep)
 

@@ -1,5 +1,4 @@
 # import necessary packages
-import imutils
 import cv2
 import dlib
 import time
@@ -7,22 +6,22 @@ from csv import writer
 from datetime import datetime
 
 class ObjCenter:
-	def __init__(self, haarPath):
+	def __init__(self):
 		# load OpenCV's Haar cascade face detector
 		# print("[INFO] loading HAAR Cascade filter")
-		# self.cascade_detector = cv2.CascadeClassifier(haarPath)
+		# self.cascade_detector = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
 		# load dlib's HOG + Linear SVM face detector
 		# print("[INFO] loading HOG + Linear SVM face detector...")
 		self.hog_detector = dlib.get_frontal_face_detector()
 		# load dlib's CNN face detector
 		# print("[INFO] loading CNN face detector...")
-		# self.cnn_detector = dlib.cnn_face_detection_model_v1("mmod_human_face_detector.dat")
+		self.cnn_detector = dlib.cnn_face_detection_model_v1("mmod_human_face_detector.dat")
 
 
 	def convert_and_trim_bb(self, image, rect):
 		# extract the starting and ending (x, y)-coordinates of the
 		# bounding box
-		print("##################################################")
+		# print("##################################################")
 		startX = rect.left()
 		startY = rect.top()
 		endX = rect.right()
@@ -40,7 +39,6 @@ class ObjCenter:
 		return (startX, startY, w, h)
 
 	def detect_face_rects_using_HOG(self, image):
-		# image = imutils.resize(image, width=600)
 		rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 		# perform face detection using dlib's face detector
 		start = time.time()
@@ -60,8 +58,11 @@ class ObjCenter:
 		# perform face detection using dlib's face detector
 		start = time.time()
 		results = self.cnn_detector(rgb, 0)
+		print(results)
 		end = time.time()
 		boxes = [self.convert_and_trim_bb(image, r.rect) for r in results]
+		print("This is my box" )
+		print(boxes)
 		return boxes
 
 	def detect_face_rects_using_cascade(self, image):
@@ -84,7 +85,7 @@ class ObjCenter:
 		if len(rects) > 0:
 			largest_rect = rects[0]
 			# loop over the bounding boxes
-			print (largest_rect)
+
 			for rect in rects:
 				(_, _, w_largest, h_largest) = largest_rect
 				(_,_, w, h) = rect
